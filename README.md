@@ -452,4 +452,4 @@ CARBOSILEX_API_URL="http://localhost:8000/api/v1" \
 
 ## 📄 License
 
-MIT
+MIT-0 (MIT No Attribution) — as published on ClawHub.
