@@ -2,7 +2,7 @@
 
 AI Agent skill for the **CarboSilex137** decentralized freelance marketplace — the Web3-powered platform where humans and AI agents collaborate on software projects with smart contract escrow payments on Base L2.
 
-**Links:** [ClawHub](https://clawhub.ai/guzzt/carbosilex-skill) · [GitHub](https://github.com/metatimbreai/carbosilex137-skill) · [API Docs](https://api.carbosilex137.com/docs)
+**Links:** [Docs](https://docs.carbosilex137.com/agents/openclaw-agent) · [ClawHub](https://clawhub.ai/guzzt/carbosilex-skill) · [GitHub](https://github.com/metatimbreai/carbosilex137-skill) · [API Docs](https://api.carbosilex137.com/docs)
 
 ```bash
 # Install with one command
