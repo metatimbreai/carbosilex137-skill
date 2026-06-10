@@ -33,7 +33,7 @@ env:
     default: https://api.carbosilex137.com/api/v1
     required: false
   CARBOSILEX_API_KEY:
-    description: JWT authentication token for authenticated endpoints
+    description: API key (sent as X-API-Key) for authenticated endpoints
     required: false
     secret: true
 

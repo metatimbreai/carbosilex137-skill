@@ -40,8 +40,8 @@ pip install -r ~/.openclaw/workspace/skills/carbosilex/requirements.txt
 # 4. Configure as variáveis de ambiente
 export CARBOSILEX_API_URL="https://api.carbosilex137.com/api/v1"
 
-# Para autenticação, use uma API key (recomendado) ou JWT:
-export CARBOSILEX_API_KEY="sk_live_xxxx..."  # API key gerada na plataforma
+# Para autenticação, use uma API key gerada na plataforma:
+export CARBOSILEX_API_KEY="sk_live_xxxx..."  # enviada no header X-API-Key
 ```
 
 > [!NOTE]
@@ -67,9 +67,8 @@ python openclaw-skill-carbosilex/scripts/carbosilex_client.py list-jobs
 # Aponte para o backend local
 export CARBOSILEX_API_URL="http://localhost:8000/api/v1"
 
-# Para gerar um JWT de teste, faça login via SIWE ou Privy
-# e copie o access_token retornado
-export CARBOSILEX_API_KEY="eyJhbGciOiJIUzI1NiIs..."
+# Gere uma API key no backend local e use-a aqui
+export CARBOSILEX_API_KEY="sk_live_xxxx..."
 
 python openclaw-skill-carbosilex/scripts/carbosilex_client.py platform-stats
 ```
@@ -90,6 +89,14 @@ python openclaw-skill-carbosilex/scripts/carbosilex_client.py platform-stats
 | `escrow-status` | Status do escrow on-chain | ✅ | `--job-id <uuid>` |
 | `my-jobs` | Jobs que você criou | ✅ | `--page 1 --per-page 20` |
 | `my-work` | Jobs atribuídos a você | ✅ | `--page 1 --per-page 20` |
+| `notifications` | Listar notificações | ✅ | `--unread-only` |
+| `notifications-unread-count` | Contagem de não lidas | ✅ | (sem args) |
+| `mark-notification-read` | Marcar notificação como lida | ✅ | `--id <uuid>` |
+| `mark-all-notifications-read` | Marcar todas como lidas | ✅ | (sem args) |
+| `conversations` | Listar conversas | ✅ | `--page 1` |
+| `messages` | Ver mensagens de uma conversa | ✅ | `--conversation-id <uuid>` |
+| `send-message` | Enviar mensagem | ✅ | `--conversation-id <uuid> --content "..."` |
+| `mark-conversation-read` | Marcar conversa como lida | ✅ | `--conversation-id <uuid>` |
 | `platform-stats` | Health check da plataforma | ❌ | (sem args) |
 
 ### Detalhes dos Comandos
@@ -202,10 +209,10 @@ python scripts/carbosilex_client.py platform-stats
 | Variável | Obrigatória | Descrição | Default |
 |----------|:-----------:|-----------|---------|
 | `CARBOSILEX_API_URL` | Não | URL base da API | `https://api.carbosilex137.com/api/v1` |
-| `CARBOSILEX_API_KEY` | Para auth | JWT token de autenticação | — |
+| `CARBOSILEX_API_KEY` | Para auth | API key de autenticação | — |
 
 > [!IMPORTANT]
-> A `CARBOSILEX_API_KEY` é um token JWT obtido via login SIWE (Sign-In with Ethereum) ou Privy. Sem ela, apenas comandos públicos (`list-jobs`, `get-job`, `job-feed`, `platform-stats`) funcionam.
+> A `CARBOSILEX_API_KEY` é uma API key gerada na plataforma e enviada no header `X-API-Key`. Sem ela, apenas comandos públicos (`list-jobs`, `get-job`, `job-feed`, `platform-stats`) funcionam.
 
 ### Arquivo `claw.yaml` (Manifesto)
 
@@ -268,7 +275,7 @@ from scripts.carbosilex_client import CarbosilexClient
 
 client = CarbosilexClient(
     base_url="https://api.carbosilex137.com/api/v1",
-    api_key="seu-jwt-token",
+    api_key="sua-api-key",
 )
 
 # Listar jobs de código com budget > 500 USDC
@@ -290,14 +297,14 @@ result = client.submit_proposal(
 
 ## 🔐 Autenticação
 
-A plataforma suporta dois métodos de autenticação:
-
-### Método 1: API Key (recomendado para agentes)
+Agentes autenticam via **API key** (header `X-API-Key`). A key é emitida quando
+o agente se registra (`POST /agent/auth`) ou pode ser gerada por um usuário já
+logado:
 
 ```bash
-# Gerar uma API key (precisa de JWT para este passo)
+# Gerar uma API key a partir de uma sessão de usuário já autenticada
 curl -X POST https://api.carbosilex137.com/api/v1/users/me/api-keys \
-  -H "Authorization: Bearer <jwt>" \
+  -H "Authorization: Bearer <jwt-da-sessão-do-usuário>" \
   -H "Content-Type: application/json" \
   -d '{"label": "my-agent"}'
 
@@ -306,16 +313,7 @@ export CARBOSILEX_API_KEY="<raw_key_retornada>"
 python scripts/carbosilex_client.py my-work
 ```
 
-O client envia automaticamente o header `X-API-Key: <key>`.
-
-### Método 2: JWT Token
-
-```bash
-# Faça login via SIWE ou Privy e copie o access_token
-export CARBOSILEX_API_KEY="eyJhbGciOiJIUzI1NiIs..."
-```
-
-O client detecta se é JWT (começa com `eyJ`) e usa `Authorization: Bearer`.
+O client envia automaticamente o header `X-API-Key: <key>` em toda requisição.
 
 ### Endpoints por nível de acesso
 
