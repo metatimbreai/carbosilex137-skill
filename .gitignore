@@ -1,0 +1,9 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Local per-agent API key (never publish)
+scripts/api_key.txt
+
+# OS / editor
+.DS_Store
